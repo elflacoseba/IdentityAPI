@@ -68,6 +68,18 @@ namespace Identity.Application.Services
                 throw new ValidationException(errorValidations);
             }
 
+            //Valido que no exista el username en la base de datos
+            var userUsername = await _userRepository.GetUserByUsernameAsync(user.UserName!);
+
+            if (userUsername != null)
+            {
+                List<ErrorValidation> errorValidations = new List<ErrorValidation>();
+
+                errorValidations.Add(new ErrorValidation(nameof(user.UserName), "El nombre de usuario ya existe en el sistema."));
+
+                throw new ValidationException(errorValidations);
+            }
+
             //Valido que no exista el email en la base de datos
             var userEmail = await _userRepository.GetUserByEmailAsync(user.Email!);
 
@@ -97,11 +109,24 @@ namespace Identity.Application.Services
                 throw new ValidationException(errorValidations);
             }
 
+            //Valido que no exista el username en la base de datos
+            var userUsername = await _userRepository.GetUserByUsernameAsync(user.UserName!);
+
+            //si obtuvo un usuario con el mismo username, valido que no sea el mismo usuario que se esta actualizando
+            if (userUsername != null && userUsername.Id != user.Id!)
+            {
+                List<ErrorValidation> errorValidations = new List<ErrorValidation>();
+
+                errorValidations.Add(new ErrorValidation(nameof(user.UserName), "El nombre de usuario ya existe en el sistema."));
+
+                throw new ValidationException(errorValidations);
+            }
+
             //Valido que no exista el email en la base de datos
             var userEmail = await _userRepository.GetUserByEmailAsync(user.Email!);
 
-            //si obtuvo un usuario con el mismo emal, valido que no sea el mismo usuario que se esta actualizando
-            if (userEmail != null && user.Id != user.Id!)
+            //si obtuvo un usuario con el mismo email, valido que no sea el mismo usuario que se esta actualizando
+            if (userEmail != null && userEmail.Id != user.Id!)
             {
                 List<ErrorValidation> errorValidations = new List<ErrorValidation>();
 
