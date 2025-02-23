@@ -4,11 +4,11 @@ using Microsoft.Extensions.Configuration;
 
 namespace Identity.Application.Validators
 {
-    public class ApplicationUserRequestDtoValidator : AbstractValidator<CreateApplicationUserRequestDto>
+    public class CreateApplicationUserRequestDtoValidator : AbstractValidator<CreateApplicationUserRequestDto>
     {
         private readonly IConfiguration _configuration;
 
-        public ApplicationUserRequestDtoValidator(IConfiguration configuration)
+        public CreateApplicationUserRequestDtoValidator(IConfiguration configuration)
         {
             _configuration = configuration;
 
@@ -32,6 +32,7 @@ namespace Identity.Application.Validators
                 .WithState(_ => new { CantidadDeCaracteres = requiredUniqueChars })
                 .MinimumLength(passwordMinimunLength).WithMessage("La contraseña debe contener al menos {MinLength} caracteres.")
                 .MaximumLength(16).WithMessage("La contraseña puede contener hasta {MaxLength} caracteres como máximo."); 
+
             RuleFor(x => x.Email)
                .NotNull().WithMessage("El email no puede ser nulo.")
                .NotEmpty().WithMessage("El email no puede estar vacío.")

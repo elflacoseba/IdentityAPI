@@ -13,13 +13,15 @@ namespace Identity.Application.Services
     {
         private readonly IApplicationUserRepository _userRepository;
         private readonly IMapper _mapper;
-        private readonly ApplicationUserRequestDtoValidator _applicationUserRequestDtoValidationRules;
+        private readonly CreateApplicationUserRequestDtoValidator _applicationUserRequestDtoValidationRules;
+        private readonly UpdateApplicationUserRequestDtoValidator _updateApplicationUserRequestDtoValidator;
 
-        public ApplicationUserService(IApplicationUserRepository userRepository, IMapper mapper, ApplicationUserRequestDtoValidator applicationUserRequestDtoValidationRules)
+        public ApplicationUserService(IApplicationUserRepository userRepository, IMapper mapper, CreateApplicationUserRequestDtoValidator applicationUserRequestDtoValidationRules, UpdateApplicationUserRequestDtoValidator updateApplicationUserRequestDtoValidator)
         {
             _userRepository = userRepository;
             _mapper = mapper;
             _applicationUserRequestDtoValidationRules = applicationUserRequestDtoValidationRules;
+            _updateApplicationUserRequestDtoValidator = updateApplicationUserRequestDtoValidator;
         }
 
         #region
@@ -53,10 +55,10 @@ namespace Identity.Application.Services
 
             if (!validationResult.IsValid)
             {
-                var errorValidations = validationResult.Errors.Select(error => new Exceptions.ErrorValidation(error.PropertyName, error.ErrorMessage))
+                var errorValidations = validationResult.Errors.Select(error => new ErrorValidation(error.PropertyName, error.ErrorMessage))
                                              .ToList();
 
-                throw new Exceptions.ValidationException(errorValidations);
+                throw new ValidationException(errorValidations);
             }
 
             //Valido que no exista el email en la base de datos
@@ -66,9 +68,9 @@ namespace Identity.Application.Services
             {
                 List<ErrorValidation> errorValidations = new List<ErrorValidation>();
 
-                errorValidations.Add(new Exceptions.ErrorValidation(nameof(user.Email), "El email ya existe en el sistema."));
+                errorValidations.Add(new ErrorValidation(nameof(user.Email), "El email ya existe en el sistema."));
 
-                throw new Exceptions.ValidationException(errorValidations);
+                throw new ValidationException(errorValidations);
             }
 
             var userEnity = _mapper.Map<ApplicationUser>(user);
@@ -78,6 +80,29 @@ namespace Identity.Application.Services
 
         public async Task<bool> UpdateUserAsync(UpdateApplicationUserRequestDto user)
         {
+            var validationResult = await _updateApplicationUserRequestDtoValidator.ValidateAsync(user);
+
+            if (!validationResult.IsValid)
+            {
+                var errorValidations = validationResult.Errors.Select(error => new ErrorValidation(error.PropertyName, error.ErrorMessage))
+                                             .ToList();
+
+                throw new ValidationException(errorValidations);
+            }
+
+            //Valido que no exista el email en la base de datos
+            var userEmail = await _userRepository.GetUserByEmailAsync(user.Email!);
+
+            //si obtuvo un usuario con el mismo emal, valido que no sea el mismo usuario que se esta actualizando
+            if (userEmail != null && user.Id != user.Id!)
+            {
+                List<ErrorValidation> errorValidations = new List<ErrorValidation>();
+
+                errorValidations.Add(new ErrorValidation(nameof(user.Email), "El email ya existe en el sistema."));
+
+                throw new ValidationException(errorValidations);
+            }
+
             var userEntity = await _userRepository.GetUserByIdAsync(user.Id!);
 
             userEntity = _mapper.Map(user, userEntity);

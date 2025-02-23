@@ -61,6 +61,7 @@ namespace Identity.SecureIAM_API.Controllers
         [HttpPost]
         [Route("CreateUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         [ProducesResponseType<ValidationErrorResponse>(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateUser(CreateApplicationUserRequestDto user)
         {
@@ -78,6 +79,8 @@ namespace Identity.SecureIAM_API.Controllers
 
         [HttpPatch]
         [Route("UpdateUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType<ValidationErrorResponse>(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> UpdateUser(UpdateApplicationUserRequestDto user, string userId)
         {
             var userDB = await _userService.GetUserByIdAsync(userId);
