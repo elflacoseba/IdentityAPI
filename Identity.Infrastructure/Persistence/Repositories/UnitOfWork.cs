@@ -1,7 +1,4 @@
-﻿using AutoMapper;
-using Microsoft.AspNetCore.Identity;
-using Identity.Infrastructure.Persistence.Context;
-using Identity.Infrastructure.Models;
+﻿using Identity.Infrastructure.Persistence.Context;
 using Identity.Domain.Interfaces;
 
 namespace Identity.Infrastructure.Persistence.Repositories
@@ -9,13 +6,11 @@ namespace Identity.Infrastructure.Persistence.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private bool disposedValue;
-        private readonly ApplicationDbContext _context;        
-        private readonly IMapper _mapper;        
+        private readonly ApplicationDbContext _context;                
 
-        public UnitOfWork(ApplicationDbContext context, IMapper mapper)
+        public UnitOfWork(ApplicationDbContext context)
         {
-            _context = context;
-            _mapper = mapper;
+            _context = context;            
         }
 
         public void BeginTransaction()
