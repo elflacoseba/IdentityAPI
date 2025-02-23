@@ -1,7 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Identity.Application.Interfaces;
 using Identity.Application.Dtos.Request;
-using Identity.Application.Exceptions;
 using Identity.API.Models.Errors;
 
 namespace Identity.SecureIAM_API.Controllers
