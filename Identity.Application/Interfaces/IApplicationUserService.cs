@@ -8,6 +8,7 @@ namespace Identity.Application.Interfaces
         #region Users
         
         Task<IEnumerable<UserResponseDto>> GetUsersAsync();
+        Task<UserResponseDto?> GetUserByUsernameAsync(string username);
         Task<UserResponseDto?> GetUserByIdAsync(string userId);
         Task<UserResponseDto?> GetUserByEmailAsync(string email);
         Task<bool> CreateUserAsync(CreateApplicationUserRequestDto user);

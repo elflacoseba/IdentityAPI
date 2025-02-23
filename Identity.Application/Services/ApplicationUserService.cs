@@ -34,6 +34,13 @@ namespace Identity.Application.Services
             return _mapper.Map<IEnumerable<UserResponseDto>>(usersEntity);
         }
 
+        public async Task<UserResponseDto?> GetUserByUsernameAsync(string username)
+        {
+            var userEntity = await _userRepository.GetUserByUsernameAsync(username);
+
+            return _mapper.Map<UserResponseDto>(userEntity);
+        }
+
         public async Task<UserResponseDto?> GetUserByEmailAsync(string email)
         {
             var userEntity = await _userRepository.GetUserByEmailAsync(email);

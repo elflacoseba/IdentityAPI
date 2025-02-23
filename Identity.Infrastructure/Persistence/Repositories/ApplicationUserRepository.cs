@@ -20,6 +20,18 @@ namespace Identity.Infrastructure.Persistence.Repositories
             _mapper = mapper;
         }
 
+        public async Task<ApplicationUser?> GetUserByUsernameAsync(string username)
+        {
+            var userModel = await _userManager.Users.FirstOrDefaultAsync(u => u.NormalizedUserName!.Equals(username.ToUpper()));
+
+            if (userModel == null)
+            {
+                return null;
+            }
+
+            return _mapper.Map<ApplicationUser>(userModel);
+        }
+
         public async Task<IEnumerable<ApplicationUser>> GetUsersAsync()
         {
             var users = await _userManager.Users.AsNoTracking().ToListAsync();
@@ -161,7 +173,6 @@ namespace Identity.Infrastructure.Persistence.Repositories
             // No cambie este código. Coloque el código de limpieza en el método "Dispose(bool disposing)".
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
-        }
-                
+        }        
     }
 }
