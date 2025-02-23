@@ -2,7 +2,7 @@
 
 namespace Identity.Domain.Interfaces
 {
-    public interface IApplicationUserRepository
+    public interface IApplicationUserRepository : IDisposable
     {
         #region Users
 

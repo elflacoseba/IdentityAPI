@@ -9,43 +9,13 @@ namespace Identity.Infrastructure.Persistence.Repositories
     public class UnitOfWork : IUnitOfWork
     {
         private bool disposedValue;
-        private readonly ApplicationDbContext _context;
-        private readonly UserManager<ApplicationUserModel> _userManager;
-        private readonly RoleManager<ApplicationRoleModel> _roleManager;
-        private readonly IMapper _mapper;
-        private IApplicationUserRepository?_userRepository;
-        private IApplicationRoleRepository? _roleRepository;
+        private readonly ApplicationDbContext _context;        
+        private readonly IMapper _mapper;        
 
-        public UnitOfWork(ApplicationDbContext context, UserManager<ApplicationUserModel> userManager, RoleManager<ApplicationRoleModel> roleManager, IMapper mapper)
+        public UnitOfWork(ApplicationDbContext context, IMapper mapper)
         {
             _context = context;
-            _userManager = userManager;
-            _roleManager = roleManager;
             _mapper = mapper;
-        }
-
-        public IApplicationUserRepository ApplicationUserRepository
-        {
-            get
-            {
-                if (_userRepository == null)
-                {
-                    _userRepository = new ApplicationUserRepository(_userManager, _mapper);
-                }
-                return _userRepository;
-            }
-        }
-
-        public IApplicationRoleRepository ApplicationRoleRepository
-        {
-            get
-            {
-                if (_roleRepository == null)
-                {
-                    _roleRepository = new ApplicationRoleRepository(_roleManager, _mapper);
-                }
-                return _roleRepository;
-            }
         }
 
         public void BeginTransaction()

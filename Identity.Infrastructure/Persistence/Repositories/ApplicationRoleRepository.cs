@@ -12,7 +12,8 @@ namespace Identity.Infrastructure.Persistence.Repositories
     {
         private readonly RoleManager<ApplicationRoleModel> _roleManager;
         private readonly IMapper _mapper;
- 
+        private bool disposedValue;
+
         public ApplicationRoleRepository(RoleManager<ApplicationRoleModel> roleManager, IMapper mapper)
         {
             _roleManager = roleManager;
@@ -89,6 +90,35 @@ namespace Identity.Infrastructure.Persistence.Repositories
 
             return result.Succeeded;
         }
-        
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: eliminar el estado administrado (objetos administrados)
+                    _roleManager.Dispose();
+                }
+
+                // TODO: liberar los recursos no administrados (objetos no administrados) y reemplazar el finalizador
+                // TODO: establecer los campos grandes como NULL
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: reemplazar el finalizador solo si "Dispose(bool disposing)" tiene código para liberar los recursos no administrados
+        // ~ApplicationRoleRepository()
+        // {
+        //     // No cambie este código. Coloque el código de limpieza en el método "Dispose(bool disposing)".
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // No cambie este código. Coloque el código de limpieza en el método "Dispose(bool disposing)".
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
     }
 }

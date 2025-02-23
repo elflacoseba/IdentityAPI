@@ -12,6 +12,7 @@ namespace Identity.Infrastructure.Persistence.Repositories
     {        
         private readonly UserManager<ApplicationUserModel> _userManager;
         private readonly IMapper _mapper;
+        private bool disposedValue;
 
         public ApplicationUserRepository(UserManager<ApplicationUserModel> userManager, IMapper mapper)
         {
@@ -128,8 +129,39 @@ namespace Identity.Infrastructure.Persistence.Repositories
             var result = await _userManager.RemoveFromRolesAsync(userModel!, roleNames);
 
             return result.Succeeded;
-        }        
+        }
 
         #endregion
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (!disposedValue)
+            {
+                if (disposing)
+                {
+                    // TODO: eliminar el estado administrado (objetos administrados)
+                    _userManager?.Dispose();
+                }
+
+                // TODO: liberar los recursos no administrados (objetos no administrados) y reemplazar el finalizador
+                // TODO: establecer los campos grandes como NULL
+                disposedValue = true;
+            }
+        }
+
+        // // TODO: reemplazar el finalizador solo si "Dispose(bool disposing)" tiene código para liberar los recursos no administrados
+        // ~ApplicationUserRepository()
+        // {
+        //     // No cambie este código. Coloque el código de limpieza en el método "Dispose(bool disposing)".
+        //     Dispose(disposing: false);
+        // }
+
+        public void Dispose()
+        {
+            // No cambie este código. Coloque el código de limpieza en el método "Dispose(bool disposing)".
+            Dispose(disposing: true);
+            GC.SuppressFinalize(this);
+        }
+                
     }
 }

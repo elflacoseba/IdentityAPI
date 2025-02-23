@@ -5,9 +5,9 @@ using Identity.WebAPI.Middlewares;
 
 namespace Identity.API
 {
-    public class Program
+    public static class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
             var configuration = builder.Configuration;
@@ -40,7 +40,7 @@ namespace Identity.API
 
             app.MapControllers();
 
-            app.Run();
+            await app.RunAsync();
         }
     }
 }

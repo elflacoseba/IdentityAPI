@@ -89,7 +89,7 @@ namespace Identity.SecureIAM_API.Controllers
         [Route("UpdateRole")]
         public async Task<IActionResult> UpdateRole(UpdateApplicationRoleRequestDto role)
         {
-            var userDB = await _roleService.GetRoleByIdAsync(role.Id);
+            var userDB = await _roleService.GetRoleByIdAsync(role.Id!);
 
             if (userDB == null)
             {

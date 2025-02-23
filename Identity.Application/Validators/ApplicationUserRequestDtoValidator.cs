@@ -17,10 +17,10 @@ namespace Identity.Application.Validators
                 .MinimumLength(8).WithMessage("La contraseña debe contener al menos {MinLength} caracteres.");
 
             RuleFor(x => x.Email)
-               .NotNull().WithMessage("El e-mail no puede ser nulo.")
-               .NotEmpty().WithMessage("El e-mail no puede estar vacío.")
+               .NotNull().WithMessage("El email no puede ser nulo.")
+               .NotEmpty().WithMessage("El email no puede estar vacío.")
                .EmailAddress().WithMessage("El texto no tiene el formato válido de una dirección de correo electrónico.")
-               .MaximumLength(50).WithMessage("El e-mail puede contener hasta {MaxLength} caracteres como máximo.");
+               .MaximumLength(50).WithMessage("El email puede contener hasta {MaxLength} caracteres como máximo.");
 
             RuleFor(x => x.FirstName)
                 .NotNull().WithMessage("El nombre no puede ser nulo.")

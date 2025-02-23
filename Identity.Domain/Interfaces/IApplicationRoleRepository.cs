@@ -2,7 +2,7 @@
 
 namespace Identity.Domain.Interfaces
 {
-    public interface IApplicationRoleRepository
+    public interface IApplicationRoleRepository : IDisposable
     {
         Task<IEnumerable<ApplicationRole>?> GetRolesAsync();
         Task<ApplicationRole?> GetRoleByIdAsync(string roleId);

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using Identity.Application.Dtos.Request;
 using Identity.Application.Dtos.Response;
+using Identity.Application.Exceptions;
 using Identity.Application.Interfaces;
 using Identity.Application.Validators;
 using Identity.Domain.Entities;
@@ -48,15 +49,26 @@ namespace Identity.Application.Services
         public async Task<bool> CreateUserAsync(CreateApplicationUserRequestDto user)
         {
      
-            var validationResult = await _applicationUserRequestDtoValidationRules.ValidateAsync(user);
+            var validationResult = await _applicationUserRequestDtoValidationRules.ValidateAsync(user);           
 
             if (!validationResult.IsValid)
             {
-                var errors = validationResult.Errors
-                                             .Select(error => new Exceptions.ErrorValidation(error.PropertyName, error.ErrorMessage))
+                var errorValidations = validationResult.Errors.Select(error => new Exceptions.ErrorValidation(error.PropertyName, error.ErrorMessage))
                                              .ToList();
 
-                throw new Exceptions.ValidationException(errors);
+                throw new Exceptions.ValidationException(errorValidations);
+            }
+
+            //Valido que no exista el email en la base de datos
+            var userEmail = await _userRepository.GetUserByEmailAsync(user.Email!);
+
+            if (userEmail != null)
+            {
+                List<ErrorValidation> errorValidations = new List<ErrorValidation>();
+
+                errorValidations.Add(new Exceptions.ErrorValidation(nameof(user.Email), "El email ya existe en el sistema."));
+
+                throw new Exceptions.ValidationException(errorValidations);
             }
 
             var userEnity = _mapper.Map<ApplicationUser>(user);
