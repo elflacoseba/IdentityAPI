@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Identity.Application.Interfaces;
 using Identity.Application.Dtos.Request;
+using Identity.Application.Exceptions;
+using Identity.API.Models.Errors;
 
 namespace Identity.SecureIAM_API.Controllers
 {
@@ -59,16 +61,19 @@ namespace Identity.SecureIAM_API.Controllers
 
         [HttpPost]
         [Route("CreateUser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType<ValidationErrorResponse>(StatusCodes.Status400BadRequest)]
         public async Task<IActionResult> CreateUser(CreateApplicationUserRequestDto user)
         {
             var result = await _userService.CreateUserAsync(user);
+            
             if (result)
             {
                 return Ok("Usuario creado correctamente.");
             }
             else
             {
-                return BadRequest("Error al crear el usuario.");
+                return BadRequest("Error al crear el usuario.");                
             }
         }
 

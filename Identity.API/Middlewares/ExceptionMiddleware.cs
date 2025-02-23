@@ -1,4 +1,5 @@
-﻿using Identity.Application.Exceptions;
+﻿using Identity.API.Models.Errors;
+using Identity.Application.Exceptions;
 using System.Net;
 using System.Text.Json;
 
@@ -30,11 +31,20 @@ namespace Identity.WebAPI.Middlewares
             var response = context.Response;
             response.ContentType = "application/json";
 
+            var errorValidationResponse = new ValidationErrorResponse();
+
+            errorValidationResponse.Message = "Hay errores de validación";
+
+            var errors = ex.ValidationErrors.Select(error => new API.Models.Errors.ErrorValidation
+            {
+                PropertyName = error.PropertyName,
+                ErrorMessage = error.ErrorMessage
+            }).ToList();
+
+            errorValidationResponse.Errors?.AddRange(errors);
+
             var StatusCode = (int)HttpStatusCode.BadRequest;
-            var result = JsonSerializer.Serialize(new { 
-                message = "Hay errores de validación",
-                errors = ex.ValidationErrors
-            });
+            var result = JsonSerializer.Serialize(errorValidationResponse);
 
             response.StatusCode = StatusCode;
             await response.WriteAsync(result);

@@ -1,4 +1,4 @@
-﻿namespace Identity.Application.Exceptions
+﻿namespace Identity.API.Models.Errors
 {
     public class ErrorValidation
     {
@@ -24,18 +24,21 @@
         }
     }
 
-    public class ValidationException : Exception
+    public class ValidationErrorResponse
     {
-        public List<ErrorValidation> ValidationErrors { get; set; }
+        public string? Message { get; set; }
+        public List<ErrorValidation>? Errors { get; set; }
 
-        public ValidationException(List<ErrorValidation> validationErrors)
+        public ValidationErrorResponse()
         {
-            ValidationErrors = validationErrors;
+            Message = string.Empty;
+            Errors = new List<ErrorValidation>();
         }
 
-        public ValidationException()
+        public ValidationErrorResponse(string? message, List<ErrorValidation>? errors)
         {
-            ValidationErrors = new List<ErrorValidation>();
+            Message = message;
+            Errors = errors;
         }
     }
 }
