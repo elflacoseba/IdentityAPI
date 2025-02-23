@@ -1,4 +1,8 @@
 
+using Identity.Application.Extensions;
+using Identity.Infrastructure.Extensions;
+using Identity.WebAPI.Middlewares;
+
 namespace Identity.API
 {
     public class Program
@@ -6,8 +10,12 @@ namespace Identity.API
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            var configuration = builder.Configuration;
 
             // Add services to the container.
+
+            builder.Services.AddApplicationLayer(configuration);
+            builder.Services.AddInfrastructureLayer(configuration);
 
             builder.Services.AddControllers();
             // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -24,6 +32,8 @@ namespace Identity.API
             }
 
             app.UseHttpsRedirection();
+            
+            app.UseMiddleware<ExceptionMiddleware>();
 
             app.UseAuthorization();
 
