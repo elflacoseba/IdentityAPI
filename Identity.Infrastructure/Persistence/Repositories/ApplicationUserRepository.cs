@@ -41,7 +41,7 @@ namespace Identity.Infrastructure.Persistence.Repositories
 
         public async Task<ApplicationUser?> GetUserByIdAsync(string userId)
         {
-            var userModel = await _userManager.FindByIdAsync(userId);
+            var userModel = await _userManager.Users.FirstOrDefaultAsync( x => x.Id.Equals(userId));
 
             if (userModel == null)
             {

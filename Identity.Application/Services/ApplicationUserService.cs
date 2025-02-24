@@ -133,11 +133,9 @@ namespace Identity.Application.Services
                 errorValidations.Add(new ErrorValidation(nameof(user.Email), "El email ya existe en el sistema."));
 
                 throw new ValidationException(errorValidations);
-            }
+            }            
 
-            var userEntity = await _userRepository.GetUserByIdAsync(user.Id!);
-
-            userEntity = _mapper.Map(user, userEntity);
+            var userEntity = _mapper.Map<ApplicationUser>(user);
 
             return await _userRepository.UpdateUserAsync(userEntity!);
         }

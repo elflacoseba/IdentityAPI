@@ -81,9 +81,9 @@ namespace Identity.SecureIAM_API.Controllers
         [Route("UpdateUser")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType<ValidationErrorResponse>(StatusCodes.Status400BadRequest)]
-        public async Task<IActionResult> UpdateUser(UpdateApplicationUserRequestDto user, string userId)
+        public async Task<IActionResult> UpdateUser(UpdateApplicationUserRequestDto user)
         {
-            var userDB = await _userService.GetUserByIdAsync(userId);
+            var userDB = await _userService.GetUserByIdAsync(user.Id!);
 
             if (userDB == null)
             {
