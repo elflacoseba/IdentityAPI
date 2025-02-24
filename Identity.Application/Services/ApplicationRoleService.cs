@@ -1,7 +1,9 @@
 ﻿using AutoMapper;
 using Identity.Application.Dtos.Request;
 using Identity.Application.Dtos.Response;
+using Identity.Application.Exceptions;
 using Identity.Application.Interfaces;
+using Identity.Application.Validators;
 using Identity.Domain.Entities;
 using Identity.Domain.Interfaces;
 
@@ -46,6 +48,18 @@ namespace Identity.Application.Services
 
         public async Task<bool> CreateRoleAsync(CreateApplicationRoleRequestDto role)
         {
+            
+            var rules = new CreateApplicationRoleRequestDtoValidator(_roleRepository);
+
+            var validationResult = await rules.ValidateAsync(role);
+
+            if (!validationResult.IsValid)
+            {
+                var errorValidations = validationResult.Errors.Select(error => new ErrorValidation(error.PropertyName, error.ErrorMessage)).ToList();
+
+                throw new ValidationException(errorValidations);
+            }   
+
             var roleEntity = _mapper.Map<ApplicationRole>(role);
 
             return await _roleRepository.CreateRoleAsync(roleEntity);

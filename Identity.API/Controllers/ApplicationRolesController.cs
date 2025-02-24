@@ -56,6 +56,7 @@ namespace Identity.SecureIAM_API.Controllers
         }
 
         [HttpPost]
+        [Route("RoleExists")]
         public async Task<IActionResult> RoleExists(string roleName)
         {
             var result = await _roleService.RoleExistsAsync(roleName);
