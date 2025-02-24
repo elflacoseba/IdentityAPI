@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Identity.Application.Dtos.Request;
 using Identity.Application.Dtos.Response;
 using Identity.Application.Exceptions;
@@ -6,6 +7,7 @@ using Identity.Application.Interfaces;
 using Identity.Application.Validators;
 using Identity.Domain.Entities;
 using Identity.Domain.Interfaces;
+using ValidationException = Identity.Application.Exceptions.ValidationException;
 
 namespace Identity.Application.Services
 {
@@ -13,11 +15,13 @@ namespace Identity.Application.Services
     {
         private readonly IApplicationRoleRepository _roleRepository;
         private readonly IMapper _mapper;
+        private readonly UpdateApplicationRoleRequestDtoValidator validationUpdateRules;
 
-        public ApplicationRoleService(IApplicationRoleRepository roleRepository, IMapper mapper)
+        public ApplicationRoleService(IApplicationRoleRepository roleRepository, IMapper mapper, UpdateApplicationRoleRequestDtoValidator validationUpdateRules)
         {
             _roleRepository = roleRepository;
             _mapper = mapper;
+            this.validationUpdateRules = validationUpdateRules;
         }
 
         public async Task<IEnumerable<RoleResponseDto>> GetRolesAsync()
@@ -58,7 +62,19 @@ namespace Identity.Application.Services
                 var errorValidations = validationResult.Errors.Select(error => new ErrorValidation(error.PropertyName, error.ErrorMessage)).ToList();
 
                 throw new ValidationException(errorValidations);
-            }   
+            }
+
+            //Valido que no exista el username en la base de datos
+            var roleName = await _roleRepository.GetRoleByNameAsync(role.Name!);
+
+            if (roleName != null)
+            {
+                List<ErrorValidation> errorValidations = new List<ErrorValidation>();
+
+                errorValidations.Add(new ErrorValidation(nameof(roleName.Name), "El nombre del rol ya existe en el sistema."));
+
+                throw new ValidationException(errorValidations);
+            }
 
             var roleEntity = _mapper.Map<ApplicationRole>(role);
 
@@ -67,10 +83,30 @@ namespace Identity.Application.Services
 
         public async Task<bool> UpdateRoleAsync(UpdateApplicationRoleRequestDto role)
         {
-            var roleEntity = await _roleRepository.GetRoleByIdAsync(role.Id!);
-            roleEntity = _mapper.Map(role, roleEntity);
+            var validationResult = await validationUpdateRules.ValidateAsync(role);
 
-            return await _roleRepository.UpdateRoleAsync(roleEntity!);
+            if (!validationResult.IsValid)
+            {
+                var errorValidations = validationResult.Errors.Select(error => new ErrorValidation(error.PropertyName, error.ErrorMessage)).ToList();
+
+                throw new ValidationException(errorValidations);
+            }
+
+            //Valido que no exista el username en la base de datos
+            var roleName = await _roleRepository.GetRoleByNameAsync(role.Name!);
+
+            if (roleName != null && roleName.Id != role.Id)
+            {
+                List<ErrorValidation> errorValidations = new List<ErrorValidation>();
+
+                errorValidations.Add(new ErrorValidation(nameof(roleName.Name), "El nombre del rol ya existe en el sistema."));
+
+                throw new ValidationException(errorValidations);
+            }
+
+            roleName = _mapper.Map<ApplicationRole>(role);
+        
+            return await _roleRepository.UpdateRoleAsync(roleName);
         }
 
         public async Task<bool> DeleteRoleAsync(string roleId)

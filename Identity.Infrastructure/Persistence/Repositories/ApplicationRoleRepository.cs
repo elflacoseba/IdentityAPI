@@ -34,7 +34,7 @@ namespace Identity.Infrastructure.Persistence.Repositories
 
         public async Task<ApplicationRole?> GetRoleByIdAsync(string roleId)
         {
-            var roleModel = await _roleManager.FindByIdAsync(roleId);
+            var roleModel = await _roleManager.Roles.AsNoTracking().FirstOrDefaultAsync(r => r.Id == roleId);
 
             if (roleModel == null)
             {
@@ -46,7 +46,7 @@ namespace Identity.Infrastructure.Persistence.Repositories
 
         public async Task<ApplicationRole?> GetRoleByNameAsync(string roleName)
         {
-            var roleModel = await _roleManager.FindByNameAsync(roleName);
+            var roleModel = await _roleManager.Roles.AsNoTracking().FirstOrDefaultAsync(r => r.NormalizedName == roleName.ToUpper());
 
             if (roleModel == null)
             {
