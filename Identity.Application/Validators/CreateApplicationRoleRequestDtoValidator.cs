@@ -14,8 +14,7 @@ namespace Identity.Application.Validators
 
             RuleFor(x => x.Name)
                .NotNull().WithMessage("El nombre del rol no puede ser nulo.")
-               .NotEmpty().WithMessage("El nombre del rol no puede ser vacío.");
-               
+               .NotEmpty().WithMessage("El nombre del rol no puede ser vacío.");               
 
             When(Role => !string.IsNullOrEmpty(Role.Name), () =>
             {
