@@ -127,6 +127,24 @@ namespace Identity.SecureIAM_API.Controllers
 
         #endregion
 
+        #region SingIn
+        [HttpGet]
+        [Route("CheckPasswordSignInAsync")]
+        public async Task<IActionResult> CheckPasswordSignInAsync(string userId, string password, bool lockoutOnFailure)
+        {
+            var result = await _userService.CheckPasswordSignInAsync(userId, password, lockoutOnFailure);
+
+            if (result)
+            {
+                return Ok("El password del usuario es válido");
+            }
+            else
+            {
+                return BadRequest("Credenciales incorrectas!");
+            }
+        }
+        #endregion
+
         #region Roles
 
         [HttpGet]

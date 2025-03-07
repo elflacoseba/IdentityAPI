@@ -11,13 +11,15 @@ namespace Identity.Infrastructure.Persistence.Repositories
     public class ApplicationUserRepository : IApplicationUserRepository
     {        
         private readonly UserManager<ApplicationUserModel> _userManager;
+        private readonly SignInManager<ApplicationUserModel> _signInManager;
         private readonly IMapper _mapper;
         private bool disposedValue;
 
-        public ApplicationUserRepository(UserManager<ApplicationUserModel> userManager, IMapper mapper)
+        public ApplicationUserRepository(UserManager<ApplicationUserModel> userManager, IMapper mapper, SignInManager<ApplicationUserModel> signInManager)
         {
-            _userManager = userManager;            
+            _userManager = userManager;
             _mapper = mapper;
+            _signInManager = signInManager;
         }
 
         public async Task<ApplicationUser?> GetUserByUsernameAsync(string username)
@@ -82,7 +84,9 @@ namespace Identity.Infrastructure.Persistence.Repositories
             userModel!.FirstName = user.FirstName;
             userModel!.LastName = user.LastName;
             
-            var result = await _userManager.UpdateAsync(userModel!);           
+            var result = await _userManager.UpdateAsync(userModel!);
+
+            
 
             return result.Succeeded;
         }
@@ -91,9 +95,9 @@ namespace Identity.Infrastructure.Persistence.Repositories
         {
             var userModel = await _userManager.Users.FirstOrDefaultAsync(u => u.Id == userId);
 
-            var result = await _userManager.DeleteAsync(userModel!);
+            var result = await _userManager.DeleteAsync(userModel!);            
             
-            return result.Succeeded;
+            return result.Succeeded;            
         }
 
         #region Roles
@@ -145,6 +149,19 @@ namespace Identity.Infrastructure.Persistence.Repositories
 
         #endregion
 
+        #region SingIn
+
+        public async Task<bool> CheckPasswordSignInAsync(ApplicationUser user, string password, bool lockoutOnFailure)
+        {
+            var userModel = await _userManager.Users.FirstOrDefaultAsync(x => x.Id == user.Id);
+
+            var result = await _signInManager.CheckPasswordSignInAsync(userModel!, password, lockoutOnFailure);
+
+            return result.Succeeded;
+        }
+
+        #endregion
+
         protected virtual void Dispose(bool disposing)
         {
             if (!disposedValue)
@@ -173,6 +190,7 @@ namespace Identity.Infrastructure.Persistence.Repositories
             // No cambie este código. Coloque el código de limpieza en el método "Dispose(bool disposing)".
             Dispose(disposing: true);
             GC.SuppressFinalize(this);
-        }        
+        }
+                
     }
 }

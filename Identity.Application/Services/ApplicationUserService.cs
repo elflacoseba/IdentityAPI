@@ -147,6 +147,17 @@ namespace Identity.Application.Services
 
         #endregion
 
+        #region SingIn
+
+        public async Task<bool> CheckPasswordSignInAsync(string userId, string password, bool lockoutOnFailure)
+        {
+            var userEntity = await _userRepository.GetUserByIdAsync(userId);
+
+            return await _userRepository.CheckPasswordSignInAsync(userEntity, password, lockoutOnFailure); 
+        }
+
+        #endregion
+
         #region Roles
 
         public async Task<IList<string>> GetRolesAsync(string userId)
@@ -173,7 +184,7 @@ namespace Identity.Application.Services
         {
             return await _userRepository.RemoveFromRolesAsync(userId, roleNames);
         }
-
+        
         #endregion
     }
 }

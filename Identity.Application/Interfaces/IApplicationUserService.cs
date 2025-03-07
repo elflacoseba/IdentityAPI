@@ -14,7 +14,13 @@ namespace Identity.Application.Interfaces
         Task<bool> CreateUserAsync(CreateApplicationUserRequestDto user);
         Task<bool> UpdateUserAsync(UpdateApplicationUserRequestDto user);
         Task<bool> DeleteUserAsync(string userId);
-        
+
+        #endregion
+
+        #region SingIn
+
+        Task<bool> CheckPasswordSignInAsync(string userId, string password, bool lockoutOnFailure);
+
         #endregion
 
         #region Roles
