@@ -1,9 +1,9 @@
 ﻿using Identity.API.Models.Errors;
-using Identity.Application.Exceptions;
+using Identity.API.Exceptions;
 using System.Net;
 using System.Text.Json;
 
-namespace Identity.WebAPI.Middlewares
+namespace Identity.API.Middlewares
 {
     public class ExceptionMiddleware
     {

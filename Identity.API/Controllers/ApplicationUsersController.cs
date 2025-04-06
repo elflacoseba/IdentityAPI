@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Identity.Application.Interfaces;
-using Identity.Application.Dtos.Request;
+using Identity.API.Interfaces;
+using Identity.API.Dtos.Request;
 using Identity.API.Models.Errors;
 
-namespace Identity.SecureIAM_API.Controllers
+namespace Identity.API.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
