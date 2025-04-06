@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Identity.API.Interfaces;
 using Identity.API.Dtos.Request;
+using Identity.API.Dtos.Response;
 
 namespace Identity.API.Controllers
 {
@@ -16,48 +17,42 @@ namespace Identity.API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public async Task<ActionResult<IEnumerable<RoleResponseDto>>> Index()
         {
             var roles = await _roleService.GetRolesAsync();
 
             return Ok(roles);
         }
-        
-        [HttpGet]
-        [Route("GetRoleById")]
-        public async Task<IActionResult> GetRoleById(string roleId)
+
+        [HttpGet("GetRoleById/{roleId}")]
+        public async Task<ActionResult<RoleResponseDto>> GetRoleById(string roleId)
         {
             var user = await _roleService.GetRoleByIdAsync(roleId);
 
-            if (user != null)
-            {
-                return Ok(user);
-            }
-            else
+            if (user is null)
             {
                 return NotFound("Rol no encontrado.");
             }
+            
+            return Ok(user);
         }
 
-        [HttpGet]
-        [Route("GetRoleByName")]
-        public async Task<IActionResult> GetRoleByName(string roleName)
+        [HttpGet("GetRoleByName/{roleName}")]
+        
+        public async Task<ActionResult<RoleResponseDto>> GetRoleByName(string roleName)
         {
             var user = await _roleService.GetRoleByNameAsync(roleName);
 
-            if (user != null)
+            if (user is null)
             {
-                return Ok(user);
+                return NotFound("Rol no encontrado.");
             }
-            else
-            {
-                return NotFound("Usuario no encontrado.");
-            }
+
+            return Ok(user);
         }
 
-        [HttpPost]
-        [Route("RoleExists")]
-        public async Task<IActionResult> RoleExists(string roleName)
+        [HttpPost("RoleExists/{roleName}")]
+        public async Task<ActionResult> RoleExists(string roleName)
         {
             var result = await _roleService.RoleExistsAsync(roleName);
 
@@ -75,43 +70,47 @@ namespace Identity.API.Controllers
         [Route("CreateRole")]
         public async Task<IActionResult> CreateRole(CreateApplicationRoleRequestDto role)
         {
-            var result = await _roleService.CreateRoleAsync(role);
-            if (result)
-            {
-                return Ok("Rol creado correctamente.");
-            }
-            else
-            {
+            var roleCreated = await _roleService.CreateRoleAsync(role);
+            
+            if (roleCreated is null)
+            {                
                 return BadRequest("Error al crear el rol.");
             }
+
+            return CreatedAtRoute("GetRoleById", new { roleId = roleCreated.Id }, roleCreated );
         }
 
-        [HttpPatch]
-        [Route("UpdateRole")]
-        public async Task<IActionResult> UpdateRole(UpdateApplicationRoleRequestDto role)
+        [HttpPut("UpdateRole/{roleId}")]        
+        public async Task<ActionResult> UpdateRole(string roleId, CreateApplicationRoleRequestDto role)
         {
-            var userDB = await _roleService.GetRoleByIdAsync(role.Id!);
+            var userDB = await _roleService.GetRoleByIdAsync(roleId);
 
             if (userDB == null)
             {
                 return NotFound("Rol no encontrado.");
             }
 
-            var result = await _roleService.UpdateRoleAsync(role);
+            var updateRoleDto = new UpdateApplicationRoleRequestDto
+            {
+                Id = roleId,
+                Name = role.Name,
+                Description = role.Description
+            };
 
-            if (result)
-            {
-                return Ok("Rol modificado correctamente.");
-            }
-            else
-            {
+
+            var result = await _roleService.UpdateRoleAsync(updateRoleDto);
+
+            if (!result)
+            {            
                 return BadRequest("Error al modificar el rol.");
             }
+            
+            return NoContent();
         }
 
         [HttpPost]
         [Route("DeleteRole")]
-        public async Task<IActionResult> DeleteRole(string roleId)
+        public async Task<ActionResult> DeleteRole(string roleId)
         {
             var role = await _roleService.GetRoleByIdAsync(roleId);
 
@@ -124,7 +123,7 @@ namespace Identity.API.Controllers
 
             if (result)
             {
-                return Ok("Rol eliminado correctamente.");
+                return NoContent();
             }
             else
             {

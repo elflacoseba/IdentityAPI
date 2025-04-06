@@ -24,7 +24,7 @@ namespace Identity.API.Services
 
         public async Task<IEnumerable<RoleResponseDto>> GetRolesAsync()
         {
-            var rolesModel = await _roleManager.Roles.ToListAsync();
+            var rolesModel = await _roleManager.Roles.AsNoTracking().ToListAsync();
 
             return _mapper.Map<IEnumerable<RoleResponseDto>>(rolesModel);
         }
@@ -48,7 +48,7 @@ namespace Identity.API.Services
             return await _roleManager.RoleExistsAsync(roleName);
         }
 
-        public async Task<bool> CreateRoleAsync(CreateApplicationRoleRequestDto role)
+        public async Task<RoleResponseDto> CreateRoleAsync(CreateApplicationRoleRequestDto role)
         {
 
             var rules = new CreateApplicationRoleRequestDtoValidator(this);
@@ -64,10 +64,9 @@ namespace Identity.API.Services
 
             var roleModel = _mapper.Map<ApplicationRoleModel>(role);
 
-            var result = await _roleManager.CreateAsync(roleModel);
+            await _roleManager.CreateAsync(roleModel);
 
-            return result.Succeeded;
-            
+            return _mapper.Map<RoleResponseDto>(roleModel);
         }
 
         public async Task<bool> UpdateRoleAsync(UpdateApplicationRoleRequestDto role)

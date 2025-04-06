@@ -9,7 +9,7 @@ namespace Identity.API.Interfaces
         Task<RoleResponseDto?> GetRoleByIdAsync(string roleId);
         Task<RoleResponseDto?> GetRoleByNameAsync(string roleName);
         Task<bool> RoleExistsAsync(string roleName);
-        Task<bool> CreateRoleAsync(CreateApplicationRoleRequestDto role);
+        Task<RoleResponseDto> CreateRoleAsync(CreateApplicationRoleRequestDto role);
         Task<bool> UpdateRoleAsync(UpdateApplicationRoleRequestDto role);
         Task<bool> DeleteRoleAsync(string roleId);
     }
