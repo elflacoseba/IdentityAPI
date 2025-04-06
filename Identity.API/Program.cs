@@ -54,10 +54,6 @@ namespace Identity.API
             builder.Services.AddScoped<IApplicationUserService, ApplicationUserService>();
             builder.Services.AddScoped<IApplicationRoleService, ApplicationRoleService>();
 
-            builder.Services.AddIdentityCore<ApplicationUserModel>()
-                .AddEntityFrameworkStores<ApplicationDbContext>()
-                .AddDefaultTokenProviders();
-
             builder.Services.AddIdentity<ApplicationUserModel, ApplicationRoleModel>()
                 .AddEntityFrameworkStores<ApplicationDbContext>()
                 .AddDefaultTokenProviders();            
